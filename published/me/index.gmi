@@ -1,0 +1,29 @@
+# About Me
+
+=> /siva.jpg Siva Mahadevan
+
+I'm an open source developer, digital minimalist, and plaintext nerd. Right now, I'm contributing to these projects actively:
+
+=> https://sr.ht/~svmhdvn/empt/ EMPT
+=> https://www.freebsd.org/ FreeBSD
+=> https://alpinelinux.org/ Alpine Linux
+=> https://t2sde.org/ T2 System Development
+
+All of my work is free and open source. You can follow me at these places:
+
+=> https://sr.ht/~svmhdvn/ Sourcehut
+=> https://github.com/svmhdvn/ Github
+=> https://www.youtube.com/@svmhdvn Youtube
+
+My work is fully funded through donations. If you'd like, you can support my work at the following links or email me to get in touch:
+
+=> https://liberapay.com/svmhdvn/ Liberapay
+=> https://www.patreon.com/svmhdvn Patreon
+=> mailto:me@svmhdvn.name Email
+
+On the side, I'm also a musician, gamer, badminton player, and foodie. I'd love to play you in chess or SSBU!
+
+=> https://lichess.org/@/svmhdvn Lichess
+=> https://steamcommunity.com/id/svmhdvn/ Steam
+
+Help ever, hurt never.
