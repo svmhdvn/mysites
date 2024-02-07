@@ -1,0 +1,14 @@
+# Vegetarian Recipes
+
+These are some of the recipes I cook on a fairly regular basis. Definitely not a comprehensive list at all; just the ones I've taken the time to write down :)
+
+## Instant pot
+
+=> /recipes/instant-pot-semiya-upma.gmi Semiya Upma
+=> /recipes/instant-pot-vegetable-pulao.gmi Vegetable Pulao
+=> /recipes/instant-pot-ven-pongal.gmi Ven Pongal
+=> /recipes/jasmine-rice.gmi Jasmine rice
+
+## Everything else
+
+=> /recipes/garlic-chili-noodles.gmi Garlic Chili Noodles
