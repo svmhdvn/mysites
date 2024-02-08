@@ -6,7 +6,8 @@ USERNAME = svmhdvn
 PUBLISHED_POSTS != find published -type f -name '*.gmi'
 BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
 ASSETS != find assets -type f
-NAV_CATEGORIES != find published -mindepth 1 -maxdepth 1 -type d | sed 's%published/\(.*\)%<li><a href="/\1/">\1</a></li>%g'
+CATEGORIES != find published -mindepth 1 -maxdepth 1 -type d | sed 's,^published/,,g'
+NAV_CATEGORIES != find published -mindepth 1 -maxdepth 1 -type d | sed 's,^published/\(.*\),<li><a href="/\1/">\1</a></li>,g'
 
 all: package/gmi.tar.gz package/html.tar.gz
 
@@ -35,7 +36,7 @@ build/feed.xml: build/posts.tsv $(BUILT_POSTS:.gmi=.article)
 	./blog.sh generate_atom_feed "$<" > "$@"
 
 build/sitemap.xml: build/index.html $(BUILT_POSTS:.gmi=.html)
-	./blog.sh generate_sitemap > "$@"
+	./blog.sh generate_sitemap "$(CATEGORIES)" > "$@"
 
 build/posts.tsv: $(PUBLISHED_POSTS)
 	./blog.sh index_tsv > "$@"

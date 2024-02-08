@@ -1,0 +1,14 @@
+image: alpine/edge
+oauth: pages.sr.ht/PAGES:RW
+packages:
+  - hut
+  - shellcheck
+environment:
+  site: svmhdvn.srht.site
+tasks:
+  - lint: |
+      shellcheck blog/blog.sh
+  - generate: |
+      make -C blog
+  - publish: |
+      make -C blog publish

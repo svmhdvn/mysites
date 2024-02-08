@@ -9,11 +9,11 @@ EMAIL="me@${DOMAIN}"
 tabchar='	'
 
 git_timestamps_iso8601() {
-    TZ=UTC0 git log --pretty='format:%cd' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
+    TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
 }
 
 git_timestamps_human() {
-    TZ=UTC0 git log --pretty="format:%cd" --date='format-local:%F at %R UTC' "$1"
+    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F at %R UTC' "$1"
 }
 
 escape_html() {
@@ -48,7 +48,7 @@ index_tsv() {
             "$updated" \
             "$(sed -n '/^# /{s/# //p; q}' "$gmi")" \
             "${gmi#published/}"
-    done
+    done | sort -r
 }
 
 article_to_html() {
@@ -102,7 +102,7 @@ generate_atom_feed() {
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${FULLNAME}</title>
-  <id>tag:${DOMAIN},2024-02-06:default-atom-feed</id>
+  <id>tag:${DOMAIN},2024-02-01:default-atom-feed</id>
   <link href="https://${DOMAIN}/" />
   <link href="https://${DOMAIN}/feed.xml" rel="self" type="application/atom+xml" />
   <updated>$(git_timestamps_iso8601 . | head -1)</updated>
@@ -137,8 +137,10 @@ EOF
     echo '</feed>'
 }
 
-# TODO add more subdirectories with custom priorities
+# TODO add <priority> if needed
 generate_sitemap() {
+    categories="$1"
+
     cat <<EOF
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -148,21 +150,22 @@ generate_sitemap() {
   <loc>https://${DOMAIN}/</loc>
   <lastmod>$(git_timestamps_iso8601 published | head -1)</lastmod>
   <changefreq>weekly</changefreq>
-  <priority>1.0</priority>
 </url>
 EOF
 
-    find build/recipes/ -type f -name '*.html' | while IFS= read -r html; do
-        gmipath="${html%.html}.gmi"
-        cat <<EOF
+    for category in $categories; do
+        find "build/$category" -type f -name '*.html' | while IFS= read -r html; do
+            gmipath="${html%.html}.gmi"
+            cat <<EOF
 <url>
   <loc>https://${DOMAIN}/${html#build/}</loc>
   <lastmod>$(git_timestamps_iso8601 "published/${gmipath#build/}" | head -1)</lastmod>
   <changefreq>weekly</changefreq>
-  <priority>0.5</priority>
 </url>
 EOF
+        done
     done
+
     echo "</urlset>"
 }
 
@@ -196,9 +199,9 @@ $(gmi_feed_entries "$tsvdb" "recipes")
 
 I'd love to hear your comments on my posts! You can comment publically by emailing my public inbox or privately at my personal email:
 
-=> mailto:~${USERNAME}/public-inbox@lists.sr.ht Publically comment
-=> mailto:${EMAIL} Privately email me
+=> mailto:~${USERNAME}/public-inbox@lists.sr.ht Write a comment
 => https://lists.sr.ht/~${USERNAME}/public-inbox Public inbox archives
+=> mailto:${EMAIL} Email me
 EOF
 
 }
@@ -225,7 +228,7 @@ case "$1" in
     article_to_html) article_to_html "$2" "$3" ;;
     generate_atom_feed) generate_atom_feed "$2" ;;
     generate_front_page) generate_front_page "$2" ;;
-    generate_sitemap) generate_sitemap ;;
+    generate_sitemap) generate_sitemap "$2" ;;
     package) package "$2" ;;
     *)
         echo "Unknown command: '$1'" >&2
