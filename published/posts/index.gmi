@@ -1,0 +1,11 @@
+# Blog Posts
+
+I'll be focusing mostly on technical content about open source software development, with a side of random thoughts here and there. Feel free to email me topic suggestions!
+
+## Technical
+
+Nothing here right now :)
+
+## Random
+
+=> /posts/hello-world.gmi Hello, World!
