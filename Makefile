@@ -6,8 +6,9 @@ USERNAME = svmhdvn
 PUBLISHED_POSTS != find published -type f -name '*.gmi'
 BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
 ASSETS != find assets -type f
-CATEGORIES != find published -mindepth 1 -maxdepth 1 -type d | sed 's,^published/,,g'
-NAV_CATEGORIES != find published -mindepth 1 -maxdepth 1 -type d | sed 's,^published/\(.*\),<li><a href="/\1/">\1</a></li>,g'
+
+CATEGORIES = posts recipes me
+NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">\1</a></li>%g'
 
 all: package/gmi.tar.gz package/html.tar.gz
 

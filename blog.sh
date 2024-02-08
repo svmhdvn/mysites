@@ -76,9 +76,7 @@ article_to_html() {
     <header>
       <nav>
         <strong><a href='/'>&lt;~${USERNAME}&gt;</a></strong>
-        <ul>
-          ${nav_categories}
-        </ul>
+        <ul>${nav_categories}</ul>
       </nav>
       <h1>${title}</h1>
     </header>
@@ -86,7 +84,7 @@ article_to_html() {
 $(cat "$article")
     </main>
     <footer>
-      <p>Last updated on ${last_updated}.</p>
+      <p>Last edited on ${last_updated}.</p>
       <p>Written and styled with ❤️ on a Pinebook Pro.</p>
       <p><a href="gemini://${DOMAIN}/${built_gmi#build/}">Best viewed using the Gemini protocol.</a></p>
       <p>☕ <a href="https://www.buymeacoffee.com/svmhdvn">Buy me a coffee</a></p>
