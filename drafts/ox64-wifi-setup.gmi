@@ -1,0 +1,70 @@
+# Using the $10 Ox64 RISC-V SBC as a cron monitoring agent
+
+## The goal
+
+While working on EMPT, a FreeBSD-based IT infrastructure distribution, I discovered the need for an external monitoring agent to perform periodic status checks on my servers. This agent needs to stay online if the main server goes down and email its administrators on any system failure. I set out to quickly brainstorm lightweight and inexpensive solutions to this and decided on using cheap Single Board Computers (SBCs) for this purpose.
+
+When simplified, the task of monitoring a server consists of periodically running a "status check" command securely on a host, and emailing an administrator of any abnormal result. SBCs are well suited for this particular task because this particular application has no performance bottlenecks to worry about. Thus, I can optimize along the following variables of the SBCs:
+* physical size
+* purchasing cost
+* maintenance costs
+* software support
+
+I generally avoid buying new hardware unless it brings non-negligible benefits to a certain task, so I looked in my current stash of gadgets for an answer. I came across the perfect solution that hadn't received any love thus far due to my own laziness: the Pine64 Ox64.
+
+## Pine64's Ox64
+
+The Pine64 Ox64 is a RISC-V based SBC that is capable of running linux. Let's look at those variables I mentioned earlier:
+* It's as big as my index finger.
+* It cost me $10 CAD (I'm cheating here a bit because shipping costs outweigh the cost of the board itself, but I'll just order in bulk if this project works out).
+* It runs on 0.5A at 5V, so pretty much negligible. It doesn't even register on my PinePower power supply.
+* ... and this is where things get interesting. I'll discuss more later about its software support.
+
+=> https://pine64.com/product/128mb-ox64-sbc-available-on-december-2-2022/ Buy an Ox64
+=> https://wiki.pine64.org/wiki/Ox64 Ox64 Wiki
+
+It was a bit of a pain to figure out how to set this thing up, but I HIGHLY recommend Ox64 owners to try it out. The feeling of wirelessly pinging the internet from such a tiny linux computer is exhilarating.
+
+Yes, that's right, this is all it takes to bring excitement to my life :)
+
+## Ox64 setup guide
+
+This setup guide worked perfectly for me at the time of writing (2024-03-17). I used the HEAD of each project, which pointed to the following commits:
+
+* buildroot/buildroot@0ee43b015768dc13649fb13096ed6d3f1da654c9
+* openbouffalo/buildroot_bouffalo@a10ce37ae04c8bb970648c6a1a1427116f959b2e
+
+### Building the buildroot image
+
+=> https://github.com/openbouffalo/buildroot_bouffalo Building Instructions
+=> https://wiki.pine64.org/wiki/Ox64#Build Additional notes from the wiki
+
+```
+mkdir buildroot_bouffalo && cd buildroot_bouffalo
+git clone https://github.com/buildroot/buildroot
+git clone https://github.com/openbouffalo/buildroot_bouffalo
+export BR_BOUFFALO_OVERLAY_PATH=$(pwd)/buildroot_bouffalo
+cd buildroot
+make BR2_EXTERNAL=$BR_BOUFFALO_OVERLAY_PATH pine64_ox64_defconfig
+```
+
+At this point, before building, I remembered something from a couple of youtube videos I watched in preparation for this project from a wonderful channel called Platima Tinkers. At the time of writing, Atomic instructions and Vector instructions were still left disabled in the .config file, even though the Ox64 has support for them with its main RV64IMAFCV core. Lets enable them in with the menuconfig target; to anyone who's reading, please remind me to submit a patch upstream to fix this!
+
+=> https://youtu.be/czRtF-UNiEY  Ox64 SBC - Connecting, Flashing and Booting Linux! ($8 from Pine64)
+=> https://youtu.be/ZNq4HA6xMpc Ox64 - Updates, Arduino Core, and Custom Compile
+```
+make BR2_EXTERNAL=$BR_BOUFFALO_OVERLAY_PATH menuconfig
+```
+
+Now, we build the buildroot. Reflexively, I tried building with the "-j`nproc`" option, but I kept running into seemingly inexplicable failures and confusing error logs. I realized that this is probably why the openbouffalo/buildroot_bouffalo README instructions were so clear in building with no fancy concurrency. Simply run
+
+```
+make
+cd output/images
+```
+
+and the images should be ready to go.
+
+### Flashing the hardware
+
+As usual, since the flashing instructions on the buildroot README and the wiki were both written a few months ago, I decided to try flashing the images using the latest Bouffalo Lab flashing tool. This was BLDevCube v1.8.9 at the time of writing. After following the instructions, all flashing attempts reported back as "successes", but upon testing the serial terminal connection, the blank output convinced me to go looking for more up-to-date advice. I found this blog post by TODO
