@@ -50,7 +50,8 @@ function trim_line_type() {
     handle_list_mode()
     trim_line_type()
     href = $1
-    alt_text = substr($0, index($0, $2))
+    trim_line_type()
+    alt_text = $0
 
     if (href ~ /\.(jpg|png|avif)$/) {
         printf("    <p><img src='%s' alt='%s'></p>\n", href, alt_text)
