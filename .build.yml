@@ -7,7 +7,7 @@ environment:
   site: svmhdvn.srht.site
 tasks:
   - lint: |
-      shellcheck blog/blog.sh
+      shellcheck -o all blog/blog.sh
   - generate: |
       make -C blog
   - publish: |
