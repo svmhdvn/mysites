@@ -91,7 +91,7 @@ EOF
       <p>Last edited on ${last_updated}.</p>
       <p>Written and styled with ❤️ on a Pinebook Pro.</p>
       <p><a href="gemini://${DOMAIN}/${built_gmi#build/}">Best viewed using the Gemini protocol.</a></p>
-      <p>☕ <a href="https://www.buymeacoffee.com/svmhdvn">Buy me a coffee</a></p>
+      <p>☕ <a href="https://buymeacoffee.com/svmhdvn">Buy me a coffee</a></p>
     </footer>
   </body>
 </html>
