@@ -23,10 +23,10 @@ iso8601_date_only() {
     sed 's/T.*//'
 }
 
+# $1 = tsvdb
+# $2 = category
 gmi_feed_entries() {
-    tsvdb="$1"
-    category="$2"
-    grep "${category}/" "${tsvdb}" | while IFS="${tabchar}" read -r created updated title f; do
+    grep "$2/" "$1" | while IFS="${tabchar}" read -r created updated title f; do
         created_date="$(echo "${created}" | iso8601_date_only)"
         echo "=> /${f} ${created_date} - ${title}"
     done
@@ -69,7 +69,6 @@ article_to_html() {
   <head>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
     <link rel='alternate' type='application/atom+xml' title='RSS/Atom Feed' href='/feed.xml'>
     <link rel='stylesheet' href='/style.css'>
     <title>${title}</title>
@@ -177,8 +176,8 @@ EOF
 
 # $1 = tsv DB
 generate_front_page() {
-    posts_feed_entries="$(gmi_feed_entries "$1" "posts")"
-    recipe_feed_entries="$(gmi_feed_entries "$1" "recipes")"
+    posts_feed_entries="$(gmi_feed_entries "$1" posts)"
+    recipe_feed_entries="$(gmi_feed_entries "$1" recipes)"
 
     cat <<EOF
 # Siva Mahadevan
