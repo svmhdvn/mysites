@@ -8,7 +8,7 @@ BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,
 ASSETS != find assets -type f
 
 CATEGORIES = posts recipes me
-NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">\1</a></li>%g'
+NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">/\1</a></li>%g'
 
 all: package/gmi.tar.gz package/html.tar.gz
 
