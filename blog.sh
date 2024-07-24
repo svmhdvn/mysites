@@ -76,8 +76,7 @@ article_to_html() {
   <body>
     <header>
       <nav>
-        <strong><a href='/'>&lt;~${USERNAME}&gt;</a></strong>
-        <ul>$2</ul>
+        <ul><li><strong><a href='/'>&lt;~${USERNAME}&gt;</a></strong></li>$2</ul>
       </nav>
       <h1>${title}</h1>
     </header>

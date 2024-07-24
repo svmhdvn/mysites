@@ -29,19 +29,19 @@ nav * {
     display: inline-block;
 }
 
+nav ul {
+    margin: 0;
+    padding: 0;
+}
+
 nav a {
-    padding: 1rem 0.75rem;
+    margin: 1rem 0.75rem;
     color: black;
     text-decoration: none;
 }
 
-nav li a {
+nav li > a {
     font-style: italic;
-}
-
-nav ul {
-    margin: 0;
-    padding: 0;
 }
 
 h1 {
