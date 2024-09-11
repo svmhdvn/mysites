@@ -1,9 +1,9 @@
 .POSIX:
 
-all: sites/blog sites/empt
+all: blog empt
 
-sites/blog:
-	$(MAKE) -C sites/blog blog
+blog:
+	$(MAKE) -C sites/blog site
 
-sites/empt:
-	$(MAKE) -C sites/empt empt
+empt:
+	$(MAKE) -C sites/empt site

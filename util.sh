@@ -1,5 +1,3 @@
-#!/bin/sh
-
 git_timestamps_iso8601() {
     TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
 }
@@ -70,10 +68,10 @@ article_to_html() {
     last_updated_history="$(git_timestamps_human "${published_gmi}" || git_timestamps_human published)"
     last_updated="$(echo "${last_updated_history}" | head -1)"
 
-    blog_title="$(gmi_title < "${built_gmi}")"
+    site_title="$(gmi_title < "${built_gmi}")"
     sed \
         -e "s|%%SITE_TITLE%%|${site_title}|g" \
-        -e "s|%%NAV_TITLE%%|${NAV_TITLE}|g" \
+        -e "s,%%NAV_TITLE%%,${NAV_TITLE},g" \
         -e "s|%%NAV_CATEGORIES%%|$2|g" \
         templates/header.html.in
     cat "$1"
