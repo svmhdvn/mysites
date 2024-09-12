@@ -1,7 +1,5 @@
 .POSIX:
 
-USERNAME = svmhdvn
-FULLNAME = Siva Mahadevan
 DOMAIN = svmhdvn.name
 EMAIL = me@$(DOMAIN)
 NAV_TITLE = \&lt;~$(USERNAME)\&gt;

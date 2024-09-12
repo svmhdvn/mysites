@@ -4,9 +4,10 @@
 PUBLISHED_POSTS != find published -type f -name '*.gmi'
 BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
 ASSETS != find assets -type f
-
 NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">/\1</a></li>%g'
-BLOGSH = USERNAME='$(USERNAME)' FULLNAME='$(FULLNAME)' DOMAIN='$(DOMAIN)' EMAIL='$(EMAIL)' NAV_TITLE='$(NAV_TITLE)' ./blog.sh
+
+USERNAME = svmhdvn
+BLOGSH = USERNAME='$(USERNAME)' DOMAIN='$(DOMAIN)' EMAIL='$(EMAIL)' NAV_TITLE='$(NAV_TITLE)' ./blog.sh
 
 build/.started: $(PUBLISHED_POSTS) blog.sh ../../gmi2htmlarticle.awk
 	rm -rf build

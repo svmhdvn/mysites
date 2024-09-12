@@ -1,0 +1,12 @@
+# Blog Posts
+
+I'll be focusing mostly on technical content about open source software development, with a side of random thoughts here and there. Feel free to email me topic suggestions!
+
+## Technical
+
+=> /posts/array-language-io-idioms.gmi I/O Idioms in the Iversonian Array Languages
+=> /posts/impressed-by-poudriere.gmi I’m Impressed By Poudriere
+
+## Random
+
+=> /posts/hello-world.gmi Hello, World!

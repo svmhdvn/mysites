@@ -1,0 +1,16 @@
+# Pricing
+
+## Tiers
+
+All prices are flat rates anchored to the minimum wage in Ontario, Canada. Currently, as of 2024-10-01, this is $17.20 CAD.
+
+### Do-It-Yourself (FREE)
+
+### Remote support ($17.20/month)
+
+### Onsite support ($17.20/week)
+
+### Fully hands-off ($17.20/workday)
+* Everything from the "Onsite support" tier, PLUS
+* All hardware is purchased by EMPT, owned by you
+* Priority

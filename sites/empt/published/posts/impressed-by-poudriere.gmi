@@ -1,0 +1,77 @@
+# I’m Impressed By Poudriere
+
+When I add new software to my digital workflow, the first thing I do is learn how to customize it. This usually means scouring the internet for blog posts written by people who have successfully configured this software in a non-trivial way and implemented it into their long-running systems with stable uptimes. Recently, I came across a blog post by “vermaden” detailing a FreeBSD concept called “PkgBase”.
+
+=> https://vermaden.wordpress.com/2023/12/09/personal-freebsd-pkgbase-update-server/ Personal FreeBSD PKGBASE Update Server
+=> https://wiki.freebsd.org/PkgBase PkgBase on FreeBSD Wiki
+
+## PkgBase
+
+To my understanding, “PkgBase” is a way to encapsulate FreeBSD’s base system (comprising both kernel and userland) into standard FreeBSD packages that can be installed normally using `pkg`. Normally, a system would consume a single `pkg` repository that contains packages from the Ports collection. With “PkgBase”, you can add a second `pkg` repository containing “PkgBase” packages. The entire system (base and ports) can be upgraded in a single shot using `pkg upgrade`.
+
+I find this really elegant. A clear divide between FreeBSD’s official sources and external third-party sources is still maintained, but distributing and installing all of it can be done in a unified manner. It’s quite convenient for me to just run a few commands to upgrade my entire system.
+
+## My old way of doing things
+
+So far, I’ve been taking a rolling-release approach to my FreeBSD build systems. This involves:
+
+* Building the base system from source on the `stable/$LATEST_MAJOR_VERSION` branch (stable/14 at the time of writing)
+* Installing the base system onto the same host using `make installkernel` and `make installworld`
+* Building ports from source using Poudriere and a custom ports list trimmed down to only the ports I use
+* Installing ports by pointing `pkg` to my local Poudriere repository and running `pkg install` or `pkg upgrade` accordingly
+
+I’ll just quickly summarize the first two bullets here using a 10-step process paraphrased from the FreeBSD handbook:
+
+```
+# cd /usr/src                            (1)
+# git checkout stable/14                 (2)
+# git pull                               (3)
+
+get up-to-date on the news by reading the UPDATING file
+
+# make -j$(nproc) buildworld buildkernel (4)
+# make installkernel                     (5)
+# reboot                                 (6)
+# etcupdate -p                           (7)
+# make -C /usr/src installworld          (8)
+# etcupdate -B                           (9)
+# shutdown -r now                       (10)
+```
+
+=> https://docs.freebsd.org/en/books/handbook/cutting-edge/#updating-src-quick-start How to build FreeBSD base from source
+
+I’ve trimmed my configuration for each of these builds in this way:
+
+* A custom `src.conf` that contains a ton of `WITHOUT_xxx` options to remove stuff I don’t need
+* A custom `KERNCONF` that only keeps bare minimum support for my particular hardware
+* A custom ports list that only includes ports that I actually use
+* A native CPUTYPE for the target system
+* A custom `make.conf` that carefully sets global defaults for all port `OPTIONS` that are good for my needs
+
+This results in a lean, mean, FreeBSD machine. I’m happy with the level of fat that this method burns off for my personal use.
+
+## The new way
+
+However, the second step of “installing the base system” is annoying. It mostly works fine for installing a base system onto the same host, but what about managing tons of hosts with heterogeneous hardware? I’d ideally like to have a fleet of lean, mean, FreeBSD machines, with tidy custom configuration. This is when I noticed the bit near the bottom of vermaden’s blog post:
+
+> I did not (yet) [investigate] the Poudriere way of doing it – but [Mina Galić] was kind enough to share [their] HOWTO on the topic.
+
+=> https://codeberg.org/pkgbase/website/src/branch/main/howto/howdo.md PkgBase Poudriere HOWTO
+
+Perfect. After searching the internet more on this topic, I came across an upstream Poudriere discussion on the same topic.
+
+=> https://github.com/freebsd/poudriere/issues/809 How to use poudriere to (only??) build pkgbase?
+
+The only thing I need to do is create a Poudriere jail with the `-B` option. This is so simple!
+
+```
+poudriere jail -c -j poudriere_stable14_upstream -b -m git+https -v stable/14 -B -K MYKERNCONF -z myconfig
+```
+
+## Poudriere is incredible software
+
+As mentioned, I’ve already been using Poudriere to create a personal Ports repository. What I learned from Mina’s post is that Poudriere can also be used to build a personal FreeBSD base repository.
+
+This essentially means I can create my own carefully curated and trimmed personal FreeBSD distribution with just a single tool: Poudriere! This is incredible and I love this software. I’ll be writing more comprehensively in the future about how I use Poudriere to maintain my FreeBSD systems.
+
+It seems that Poudriere has followed the UNIX philosophy perfectly. It really only does one thing, but it does it extremely well.

@@ -1,0 +1,44 @@
+# I/O Idioms in the Iversonian Array Languages
+
+Around three years ago, I came across a post on Hacker News announcing the first episode of The Array Cast, a podcast about the array programming languages. This post caught my eye quite quickly because I had never heard of the array programming paradigm before and wanted to learn more about it. I was working for NVIDIA at the time, so I was (and still am) enthralled by the performance gains of restructuring code to take advantage of large-scale parallelism. Upon first glance, I understood it as a way to express homogeneous computations over a collection of data without explicitly writing housekeeping code to loop over the collection. It registered in my mind as a SIMD-first (Single Instruction, Multiple Data) paradigm.
+
+=> https://news.ycombinator.com/item?id=27209093 Hacker News: The Array Cast – A podcast about the array programming languages
+
+Life got in the way of spending quality time doing a proper deep-dive into the paradigm. I decided to first learn the J language after coming across a nice book called “J for C programmers”, which was definitely applicable to me. I took advantage of a long flight to read through a good chunk of the book, stopping after the “Input and Output” section. It was a good experience for me because the ASCII symbols were easy to type in a normal text editor and the wiki was very detailed (even if it was quite dense) when I was in need of help. The concepts of abstracting out the loops and carefully constructing customized “views” over raw multidimensional data became very attractive.
+
+=> https://www.jsoftware.com/help/jforc/contents.htm J for C Programmers
+
+At this point, I started to follow the ArrayCast and listen to every episode as they came out. I really love it! The technical discussion interleaved with humour and stories from all the accomplished array programmers around the world is a great way to learn more about this powerful paradigm. As of now, I'm really interested in BQN and will be spending some free time reading through all the wonderful documentation.
+
+=> https://mlochbaum.github.io/BQN/ The BQN programming language
+
+## A Mental Barrier
+
+To someone who has been programming for 15 years now, learning the syntax and understanding the parsing/evaluation semantics of an array language is not too difficult. Discovering and internalizing the idioms that experienced programmers use to perform real-world tasks is the hard part. For example, as a POSIX shell enthusiast, I might be able to easily conjure certain blocks of code for chaining together a large pipeline of bite-sized string processing utilities to parse some arbitrary text data. Others might find it to be a daunting task to scour the POSIX specifications to find exactly the flags they are looking for to manipulate the data in a certain way. I currently feel like this with the array programming languages.
+
+What I have noticed is that although the currently available documentation and pedagogical material is really high quality and quite captivating, it misses a lot of the idioms that newcomers might need to start writing programs with real-world data. I'm grateful for the existence of the “J for C programmers” book for this reason, since it does use a practical approach to appeal to procedural programmers like me who are used to consuming data in a certain C-oriented way. But what I'm really looking for (and this may be a bit lazy of me, but this is an unfiltered thought of mine) experienced array programmers to teach the best practices of:
+* consuming messy real-world data in unstructured plain text, structured binary, and RFC-standardized data interchange formats
+* representing unnecessarily sparse “structs” from other programming languages as dense arrays that are primed for easy manipulation using array language primitives
+* serializing array data into RFC-standardized data interchange formats suitable for consumption by external applications
+
+This is my question to the panel of The Array Cast. As I am currently learning BQN, my question will be more tailored towards it, but I love the paradigm as a whole and all languages within it.
+
+## How do the Iversonian array languages like to interchange data with the outside world?
+
+Conor's YouTube videos and podcast appearances in CodeRecursive and ADSP are a great source of content for algorithmic and combinatorial idioms in BQN using practical problem-solving techniques. These are great for solving isolated tasks such as the ones found in LeetCode, Project Euler, Advent of Code, and similar coding challenges.
+
+=> https://www.youtube.com/@code_report Conor’s Youtube Channel
+
+Marshall and BQN contributors’ documentation on the BQN website is extensive, articulate, and quite captivating with its high quality content and comedic references. The BQN source code is also full of incredibly high content pedagogical material on the topic of data interchange, such as the following:
+
+=> https://github.com/mlochbaum/BQN/blob/master/md.bqn A Markdown parser used to generate the beautiful website
+=> https://github.com/dzaima/CBQN/blob/master/build/src/build.bqn A multithreaded Make-like build tool used to build CBQN
+=> https://github.com/mlochbaum/bqn-libs The BQN-libs project that provides various utilities for data interchange
+
+Going through the last of the above points primitive-by-primitive should really help a newcomer to learn some idioms, and I have put this task on my TODO list. However, this prompts the question in the heading of this section. Hypothetically, in an ideal world where array programming languages are the “lingua franca” of computer programming, what on-disk and in-memory data interchange formats and data-organizational methods are IDEAL for array language consumption? I realize that this is a context-dependent and industry/domain-dependent question, but I observe a few patterns in the industry right now:
+* Flexible, but verbose formats like JSON are common for communicating data between web services due to first class citizenship in JavaScript and other web-oriented languages
+* Simple textual tabular data formats like {C,T}SV are common when rapidly iterating on data analysis in scientific and numerical computation
+* Protobuf and similar dense serialization formats are common for communicating between heterogeneous submodules within monolith projects
+* Binary formats are common in multimedia since the compression of data and ease of consumption by hardware implementations is the priority
+
+These are all examples of widely used formats that are ripe for consumption by the Iversonian array languages. But I don't know where to start. I would absolutely love to listen to a discussion on this topic and learn what the best practices are in the eyes of all the panel members of The Array Cast. Thanks for the incredible discussions so far! I can't wait to listen to the upcoming episodes.

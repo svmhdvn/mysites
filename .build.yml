@@ -7,8 +7,8 @@ environment:
   site: svmhdvn.srht.site
 tasks:
   - lint: |
-      shellcheck -o all blog/blog.sh
+      find . -type f -name '*.sh' | xargs shellcheck -o all
   - generate: |
-      make -C blog
+      make -C mysites
   - publish: |
-      make -C blog publish
+      make -C mysites/sites/blog publish

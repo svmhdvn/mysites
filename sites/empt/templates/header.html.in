@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' href='/style.css'>
+    <title>%%SITE_TITLE%%</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul><li><strong><a href='/'>%%NAV_TITLE%%</a></strong></li>%%NAV_CATEGORIES%%</ul>
+      </nav>
+      <h1>%%SITE_TITLE%%</h1>
+    </header>
+    <main>

@@ -3,6 +3,8 @@ set -eu
 
 . ../../util.sh
 
+FULLNAME='Siva Mahadevan'
+
 # $1 = tsvdb
 generate_atom_feed() {
     last_updated="$(git_timestamps_iso8601 . | head -1)"
