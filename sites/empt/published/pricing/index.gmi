@@ -1,16 +1,30 @@
 # Pricing
 
-## Tiers
-
-All prices are flat rates anchored to the minimum wage in Ontario, Canada. Currently, as of 2024-10-01, this is $17.20 CAD.
+All prices are flat rates anchored to the current minimum wage in Ontario, Canada. As of 2024-10-01, this is $17.20 CAD.
 
 ### Do-It-Yourself (FREE)
 
 ### Remote support ($17.20/month)
 
+* Installation
+* Employee training
+* 24/7 server uptime monitoring
+* Daily storage drive lifetime monitoring
+* Weekly software updates and maintenance
+* Security advisory monitoring
+
 ### Onsite support ($17.20/week)
 
-### Fully hands-off ($17.20/workday)
-* Everything from the "Onsite support" tier, PLUS
-* All hardware is purchased by EMPT, owned by you
-* Priority
+Everything from the "Remote support" tier, PLUS
+
+* Onsite storage drive replacement and rotation
+* Onsite networking hardware replacement and management
+* Prioritized support
+* Customized services by request
+
+### Fully managed ($17.20/workday)
+
+Everything from the "Onsite support" tier, PLUS
+
+* All required hardware is purchased by EMPT, but owned by you
+* Additional offsite comprehensive backups maintained by EMPT

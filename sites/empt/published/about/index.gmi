@@ -1,6 +1,6 @@
 # About Us
 
-We are a non-profit 
+EMPT is a non-profit managed IT service provider based in Waterloo, Ontario, Canada. Our mission is to minimize the cost of IT services for local small to medium sized businesses.
 
 => https://sr.ht/~svmhdvn/empt/ EMPT
 => https://www.freebsd.org/ FreeBSD
