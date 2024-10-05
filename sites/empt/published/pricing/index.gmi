@@ -2,7 +2,27 @@
 
 All prices are flat rates anchored to the current minimum wage in Ontario, Canada. As of 2024-10-01, this is $17.20 CAD.
 
-### Do-It-Yourself (FREE)
+## Prerequisites
+
+To use EMPT IT, you and/or your organization will need the following assets:
+
+* Domain name [mandatory]
+* Static IPv4 address [mandatory]
+* Low cost computer [mandatory¹]
+* Network router [mandatory¹]
+* Backup computer(s) [recommended¹]
+* Static IPv6 address range [recommended]
+* Additional storage depending on your usage [optional¹]
+
+¹ Purchased on your behalf in the "Fully Managed" tier
+
+## Pricing tiers
+
+### Do It Yourself (FREE)
+
+EMPT IT is based entirely on free and open source software capable of running on inexpensive hardware. Please follow the "Getting Started" guide to install EMPT IT in your household or organization.
+
+=> /help/getting-started/ Getting Started with EMPT IT
 
 ### Remote support ($17.20/month)
 
@@ -13,18 +33,18 @@ All prices are flat rates anchored to the current minimum wage in Ontario, Canad
 * Weekly software updates and maintenance
 * Security advisory monitoring
 
-### Onsite support ($17.20/week)
+### Onsite Support ($17.20/week)
 
-Everything from the "Remote support" tier, PLUS
+Everything from the "Remote Support" tier, PLUS
 
 * Onsite storage drive replacement and rotation
 * Onsite networking hardware replacement and management
 * Prioritized support
 * Customized services by request
 
-### Fully managed ($17.20/workday)
+### Fully Managed ($17.20/workday)
 
-Everything from the "Onsite support" tier, PLUS
+Everything from the "Onsite Support" tier, PLUS
 
 * All required hardware is purchased by EMPT, but owned by you
 * Additional offsite comprehensive backups maintained by EMPT

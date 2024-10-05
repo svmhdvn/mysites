@@ -11,13 +11,15 @@ generate_front_page() {
     cat <<EOF
 # EMPT
 
-We provide on-premise managed IT services using 100% free and open source software. Our core product, the "EMPT box", comprises:
+We provide on-premise managed IT services using 100% free and open source software. Our core product, "EMPT IT", comprises:
 * Networking
 * Data storage
 * Email
-* Instant chat
+* Instant messaging
 * Single Sign On authentication
 * Backups, replication, and monitoring
+
+## EMPT IT
 
 ## Site Directory
 
