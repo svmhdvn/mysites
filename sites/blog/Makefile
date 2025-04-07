@@ -1,8 +1,7 @@
 .POSIX:
 
 DOMAIN = svmhdvn.name
-EMAIL = me@$(DOMAIN)
-NAV_TITLE = \&lt;~$(USERNAME)\&gt;
+EMAIL = me@svmhdvn.name
 CATEGORIES = posts recipes me
 
 site: build/feed.xml package/gmi.tar.gz package/html.tar.gz

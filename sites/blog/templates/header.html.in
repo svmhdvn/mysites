@@ -10,7 +10,13 @@
   <body>
     <header>
       <nav>
-        <ul><li><strong><a href='/'>%%NAV_TITLE%%</a></strong></li>%%NAV_CATEGORIES%%</ul>
+        <ul>
+          <li><strong><a href='/'>&lt;~svmhdvn&gt;</a></strong></li>
+          <li><a href="/articles/">/articles</a></li>
+          <li><a href="/thoughts/">/thoughts</a></li>
+          <li><a href="/recipes/">/recipes</a></li>
+          <li><a href="/about/">/about</a></li>
+        </ul>
       </nav>
       <h1>%%SITE_TITLE%%</h1>
     </header>

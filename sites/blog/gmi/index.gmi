@@ -1,0 +1,30 @@
+# Siva Mahadevan
+
+Hey :) Welcome to my blog!
+
+## Directory
+
+=> /about/ About Me
+=> /articles/ Articles
+=> /thoughts/ Thoughts
+=> /notes/ Notes
+
+## Feed
+
+Here are some things I've written:
+
+### Blog Posts
+
+${posts_feed_entries}
+
+### Vegetarian Recipes
+
+${recipe_feed_entries}
+
+## Contact
+
+I'd love to hear your comments on my posts! You can comment publically by emailing my public inbox or privately at my personal email:
+
+=> mailto:~svmhdvn/public-inbox@lists.sr.ht Write a comment
+=> https://lists.sr.ht/~svmhdvn/public-inbox Read comments from others
+=> mailto:me@svmhdvn.name Contact me privately

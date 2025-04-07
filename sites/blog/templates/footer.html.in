@@ -1,7 +1,6 @@
     </main>
     <footer>
-      <p>Last edited on %%LAST_UPDATED%%.</p>
-      <p>❤️ Written on a Pinebook Pro.</p>
+      <p>Written with ❤ on %%LAST_UPDATED%%.</p>
       <p>🚀 <a href="%%GMI_URL%%">Best viewed using the Gemini protocol.</a></p>
       <p>☕ <a href="https://buymeacoffee.com/svmhdvn">Buy me a coffee</a></p>
     </footer>
