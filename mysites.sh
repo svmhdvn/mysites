@@ -70,32 +70,11 @@ gmi_feed_entries() {
     done
 }
 
-# $1 = article
-# $2 = nav_categories
-article_to_html() {
-    built_gmi="${1%.article}.gmi"
-    published_gmi="published/${built_gmi#build/}"
 
-    # shellcheck disable=SC2310
-    last_updated_history="$(git_timestamps_human "${published_gmi}" || git_timestamps_human published)"
-    last_updated="$(echo "${last_updated_history}" | head -1)"
-
-    site_title="$(gmi_title < "${built_gmi}")"
-    sed \
-        -e "s|%%SITE_TITLE%%|${site_title}|g" \
-        -e "s,%%NAV_TITLE%%,${NAV_TITLE},g" \
-        -e "s|%%NAV_CATEGORIES%%|$2|g" \
-        templates/header.html.in
-    cat "$1"
-    sed \
-        -e "s|%%LAST_UPDATED%%|${last_updated}|g" \
-        -e "s|%%GMI_URL%%|gemini://${DOMAIN}/${built_gmi#build/}|g" \
-        templates/footer.html.in
-}
 
 # TODO add <priority> if needed
 # $1 = categories
-generate_sitemap() {
+_generate_sitemap() {
     last_published="$(git_timestamps_iso8601 published | head -1)"
 
     cat <<EOF
@@ -127,16 +106,88 @@ EOF
     echo "</urlset>"
 }
 
+# $1 = site
+# $2 = gmi
+# $3 = date
+_article_to_html() {
+  _gmisrc="sites/$1/gmi"
+  _templates="sites/$1/templates"
+  site_title="$(gmi_title < "${_gmisrc}/$2")"
+  sed \
+    -e "s|%%SITE_TITLE%%|${site_title}|g" \
+    "${templates}/header.html.in"
+  ./gmi2htmlarticle.awk < "${_gmisrc}/$2"
+  sed \
+    -e "s|%%WRITTEN_ON%%|$3|g" \
+    -e "s|%%GMI_URL%%|gemini://${DOMAIN}/$2|g" \
+    "${templates}/footer.html.in"
+}
+
+# $1 = path to feed.gmi
+_generate_atom_feed() {
+  _last_updated="$(tail -1 "$1" | cut -f1)"
+  cat <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>${FULLNAME}</title>
+  <id>tag:${DOMAIN},2024-02-01:default-atom-feed</id>
+  <link href="https://${DOMAIN}/" />
+  <link href="https://${DOMAIN}/feed.xml" rel="self" type="application/atom+xml" />
+  <updated>${_last_updated}</updated>
+  <generator uri="https://codeberg.org/svmhdvn/mysites">blog.sh</generator>
+  <icon>https://${DOMAIN}/favicon.ico</icon>
+  <logo>https://${DOMAIN}/siva.jpg</logo>
+  <subtitle>${FULLNAME}'s Blog</subtitle>
+  <author>
+    <name>Siva Mahadevan</name>
+    <uri>https://svmhdvn.name/</uri>
+    <email>me@svmhdvn.name</email>
+  </author>
+EOF
+
+  while IFS='	' read -r _date _path _title; do
+    day=$(echo "${created}" | iso8601_date_only)
+    escaped_html="$(escape_html < "build/${gmi%.gmi}.article")"
+    cat <<EOF
+<entry>
+  <title>${title}</title>
+  <id>tag:${DOMAIN},${day}:${gmi%.gmi}.html</id>
+  <link rel="alternate" href="https://${DOMAIN}/${gmi%.gmi}.html"/>
+  <published>${created}</published>
+  <updated>${updated}</updated>
+  <content type="html">
+${escaped_html}
+  </content>
+</entry>
+EOF
+  done < "$1"
+  echo '</feed>'
+}
 cache="${XDG_CACHE_HOME:-${HOME}/.cache}/mysites"
 # $1 = site
 _build() {
   _artifacts="${cache}/$1"
-  _build="${_artifacts}/build"
+  _builtgmi="${_artifacts}/gmi"
+  _builthtml="${_artifacts}/html"
   _out="${_artifacts}/out"
-  mkdir -p "${_build}" "${_out}"
 
   while IFS='	' read -r _date _path _title; do
+    _base="$(basename "${_path}")"
+    _gmi="sites/$1/gmi/${_path}"
+    mkdir -p "${_builtgmi}/${_base}" "${_builthtml}/${_base}"
+    cp "${_gmi}" "${_builtgmi}/${_path}"
+    _article_to_html "${_gmi}" > "${_builthtml}/${_path%.gmi}.html"
   done < "sites/$1/published.tsv"
+
+  _generate_sitemap > "${_builthtml}/sitemap.xml"
+  _generate_atom_feed > "${_builthtml}/atom.xml"
+
+  grep -E '=> \S* \d{4}-\d{2}-\d{2}' "sites/$1/gmi/index.gmi" | \
+    sed 's,=> \([^ ]*\) \([^ ]*\) - \(.*\),\2\t\1\t\3,g' | \
+    sort -k1 > "${_artifacts}/feed.gmi"
+  _generate_atom_feed "${_artifacts}/feed.gmi"
+
+  mkdir -p "${_out}"
 
   ls -alh "${_out}"
 }

@@ -11,15 +11,9 @@ Hey :) Welcome to my blog!
 
 ## Feed
 
-Here are some things I've written:
-
-### Blog Posts
-
-${posts_feed_entries}
-
-### Vegetarian Recipes
-
-${recipe_feed_entries}
+=> /articles/array-language-io-idioms.gmi 2024-06-04 - I/O Idioms in the Iversonian Array Languages
+=> /articles/impressed-by-poudriere.gmi 2024-02-09 - I’m Impressed By Poudriere
+=> /articles/hello-world.gmi 2024-02-08 - Hello, World!
 
 ## Contact
 
