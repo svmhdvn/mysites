@@ -70,40 +70,28 @@ gmi_feed_entries() {
     done
 }
 
-
-
-# TODO add <priority> if needed
-# $1 = categories
+# TODO add <changefreq> to published.tsv
+# $1 = path to published.tsv
 _generate_sitemap() {
-    last_published="$(git_timestamps_iso8601 published | head -1)"
+  _last_updated="$(tail -1 "$1" | cut -f1)"
+  sed \
+    -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
+    "${templates}/sitemap_meta.frag.xml"
+  while IFS='	' read -r _date _gmi _title; do
+    _path="${_gmi%.gmi}"
+    sed \
+      -e "s|%%DATE%%|${_date}|g" \
+      -e "s|%%PATH%%|${_path}|g" \
+      "${templates}/sitemap_entry.frag.xml"
+  done < "$1"
+  echo "</urlset>"
+}
 
-    cat <<EOF
-<?xml version='1.0' encoding='UTF-8'?>
-<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
-    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-  <loc>https://${DOMAIN}/</loc>
-  <lastmod>${last_published}</lastmod>
-  <changefreq>weekly</changefreq>
-</url>
-EOF
-
-    for category in $1; do
-        find "build/${category}" -type f -name '*.html' | while IFS= read -r html; do
-            gmipath="${html%.html}.gmi"
-            lastmod="$(git_timestamps_iso8601 "published/${gmipath#build/}" | head -1)"
-            cat <<EOF
-<url>
-  <loc>https://${DOMAIN}/${html#build/}</loc>
-  <lastmod>${lastmod}</lastmod>
-  <changefreq>weekly</changefreq>
-</url>
-EOF
-        done
-    done
-
-    echo "</urlset>"
+# $1 = path to index.gmi
+_gmi_to_feed_tsv() {
+  grep -E '=> \S* \d{4}-\d{2}-\d{2}' "$1" | \
+    sed 's,=> \([^ ]*\) \([^ ]*\) - \(.*\),\2\t\1\t\3,g' | \
+    sort -k1
 }
 
 # $1 = site
@@ -111,86 +99,64 @@ EOF
 # $3 = date
 _article_to_html() {
   _gmisrc="sites/$1/gmi"
-  _templates="sites/$1/templates"
   site_title="$(gmi_title < "${_gmisrc}/$2")"
   sed \
     -e "s|%%SITE_TITLE%%|${site_title}|g" \
-    "${templates}/header.html.in"
+    "${templates}/header.frag.html"
   ./gmi2htmlarticle.awk < "${_gmisrc}/$2"
   sed \
+    -e "s|%%GMI_URL%%|$2|g" \
     -e "s|%%WRITTEN_ON%%|$3|g" \
-    -e "s|%%GMI_URL%%|gemini://${DOMAIN}/$2|g" \
-    "${templates}/footer.html.in"
+    "${templates}/footer.frag.html"
 }
 
-# $1 = path to feed.gmi
+# $1 = path to feed.tsv
 _generate_atom_feed() {
   _last_updated="$(tail -1 "$1" | cut -f1)"
-  cat <<EOF
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title>${FULLNAME}</title>
-  <id>tag:${DOMAIN},2024-02-01:default-atom-feed</id>
-  <link href="https://${DOMAIN}/" />
-  <link href="https://${DOMAIN}/feed.xml" rel="self" type="application/atom+xml" />
-  <updated>${_last_updated}</updated>
-  <generator uri="https://codeberg.org/svmhdvn/mysites">blog.sh</generator>
-  <icon>https://${DOMAIN}/favicon.ico</icon>
-  <logo>https://${DOMAIN}/siva.jpg</logo>
-  <subtitle>${FULLNAME}'s Blog</subtitle>
-  <author>
-    <name>Siva Mahadevan</name>
-    <uri>https://svmhdvn.name/</uri>
-    <email>me@svmhdvn.name</email>
-  </author>
-EOF
+  sed \
+    -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
+    "${templates}/feed_meta.frag.xml"
 
-  while IFS='	' read -r _date _path _title; do
-    day=$(echo "${created}" | iso8601_date_only)
-    escaped_html="$(escape_html < "build/${gmi%.gmi}.article")"
-    cat <<EOF
-<entry>
-  <title>${title}</title>
-  <id>tag:${DOMAIN},${day}:${gmi%.gmi}.html</id>
-  <link rel="alternate" href="https://${DOMAIN}/${gmi%.gmi}.html"/>
-  <published>${created}</published>
-  <updated>${updated}</updated>
-  <content type="html">
-${escaped_html}
-  </content>
-</entry>
-EOF
+  while IFS='	' read -r _date _gmi _title; do
+    _path="${_gmi%.gmi}"
+    sed \
+      -e "s|%%DATE%%|${_date}|g" \
+      -e "s|%%PATH%%|${_path}|g" \
+      -e "s|%%TITLE%%|${_title}|g" \
+      "${templates}/feed_entry.frag.xml"
+    escape_html < "build/${_path}.article"
+    echo '</content></entry>'
   done < "$1"
   echo '</feed>'
 }
 cache="${XDG_CACHE_HOME:-${HOME}/.cache}/mysites"
-# $1 = site
 _build() {
-  _artifacts="${cache}/$1"
+  _artifacts="${cache}/${site}"
+
   _builtgmi="${_artifacts}/gmi"
   _builthtml="${_artifacts}/html"
-  _out="${_artifacts}/out"
-
-  while IFS='	' read -r _date _path _title; do
-    _base="$(basename "${_path}")"
-    _gmi="sites/$1/gmi/${_path}"
+  while IFS='	' read -r _date _gmi _title; do
+    _base="$(basename "${_gmi}")"
+    _gmifullpath="sites/${site}/gmi/${_gmi}"
     mkdir -p "${_builtgmi}/${_base}" "${_builthtml}/${_base}"
-    cp "${_gmi}" "${_builtgmi}/${_path}"
-    _article_to_html "${_gmi}" > "${_builthtml}/${_path%.gmi}.html"
-  done < "sites/$1/published.tsv"
+    cp "${_gmifullpath}" "${_builtgmi}/${_gmi}"
+    _article_to_html "${_gmifullpath}" > "${_builthtml}/${_gmi%.gmi}.html"
+  done < "sites/${site}/published.tsv"
 
-  _generate_sitemap > "${_builthtml}/sitemap.xml"
-  _generate_atom_feed > "${_builthtml}/atom.xml"
+  _generate_sitemap "sites/${site}/published.tsv" > "${_builthtml}/sitemap.xml"
 
-  grep -E '=> \S* \d{4}-\d{2}-\d{2}' "sites/$1/gmi/index.gmi" | \
-    sed 's,=> \([^ ]*\) \([^ ]*\) - \(.*\),\2\t\1\t\3,g' | \
-    sort -k1 > "${_artifacts}/feed.gmi"
-  _generate_atom_feed "${_artifacts}/feed.gmi"
+  _gmi_to_feed_tsv "sites/${site}/gmi/index.gmi" > "${_artifacts}/feed.tsv"
+  _generate_atom_feed "${_artifacts}/feed.tsv" > "${_builthtml}/feed.xml"
 
+  _out="${_artifacts}/out"
   mkdir -p "${_out}"
-
+  tar -C "${_builtgmi}" -cvzf "${_out}/gmi.tar.gz" .
+  tar -C "${_builthtml}" -cvzf "${_out}/html.tar.gz" .
   ls -alh "${_out}"
 }
+
+site="$2"
+templates="sites/${site}/templates"
 
 #while getopts h: name
 #do
@@ -206,7 +172,7 @@ _build() {
 #shift $((OPTIND - 1))
 
 case "$1" in
-  build) _build "$2" ;;
-  publish) _publish "$2" ;;
+  build) _build ;;
+  publish) _publish ;;
   *) echo "unknown command: '$1'" >&2; _usage ;;
 esac

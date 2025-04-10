@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Siva Mahadevan</title>
+  <id>tag:svmhdvn.name,2024-02-01:default-atom-feed</id>
+  <link href="https://svmhdvn.name/" />
+  <link href="https://svmhdvn.name/feed.xml" rel="self" type="application/atom+xml" />
+  <updated>%%LAST_UPDATED%%</updated>
+  <generator uri="https://codeberg.org/svmhdvn/mysites">blog.sh</generator>
+  <icon>https://svmhdvn.name/favicon.ico</icon>
+  <logo>https://svmhdvn.name/siva.jpg</logo>
+  <subtitle>Siva's Blog</subtitle>
+  <author>
+    <name>Siva Mahadevan</name>
+    <uri>https://svmhdvn.name/</uri>
+    <email>me@svmhdvn.name</email>
+  </author>
