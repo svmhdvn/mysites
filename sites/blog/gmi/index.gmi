@@ -2,13 +2,6 @@
 
 Welcome to my blog!
 
-## Directory
-
-=> /about/ About Me
-=> /articles/ Articles
-=> /thoughts/ Stream of Consciousness
-=> /notes/ Braindump
-
 ## Feed
 
 => /articles/array-language-io-idioms.gmi 2024-06-04 - I/O Idioms in the Iversonian Array Languages
@@ -22,3 +15,10 @@ I'd love to hear your comments on my posts! You can comment publically by emaili
 => mailto:~svmhdvn/public-inbox@lists.sr.ht Write a comment
 => https://lists.sr.ht/~svmhdvn/public-inbox Read comments from others
 => mailto:me@svmhdvn.name Contact me privately
+
+## Directory
+
+=> /articles/ Articles
+=> /thoughts/ Stream of Consciousness
+=> /notes/ Braindump
+=> /about/ About Me
