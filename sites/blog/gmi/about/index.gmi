@@ -2,20 +2,26 @@
 
 => /siva.jpg Siva Mahadevan
 
-I'm an open source developer, digital minimalist, and plaintext nerd. Right now, I'm contributing to these projects actively:
+I'm an open source developer, digital minimalist, and plaintext nerd. Right now, I'm primarily contributing to these projects actively:
 
-=> https://sr.ht/~svmhdvn/empt/ EMPT
+=> https://codeberg.org/svmhdvn/empt/ EMPT
 => https://www.freebsd.org/ FreeBSD
 => https://alpinelinux.org/ Alpine Linux
-=> https://t2sde.org/ T2 System Development
+
+These are a few projects, other than the ones above, that have inspired me. Given enough time and financial stability, I would love to spend more time contributing to them.
+
+=> https://mlochbaum.github.io/BQN/ The BQN Array Programming Language
+=> https://t2sde.org/ T2 System Development Environment
+=> https://www.scryer.pl/ Scryer Prolog
 
 All of my work is free and open source. You can follow me at these places:
 
-=> https://sr.ht/~svmhdvn/ Sourcehut
+=> https://codeberg.org/svmhdvn/ Codeberg
 => https://github.com/svmhdvn/ Github
+=> https://sr.ht/~svmhdvn/ Sourcehut
 => https://www.youtube.com/@svmhdvn Youtube
 
-My work is fully funded through donations. If you'd like, you can support my work at the following links or email me to get in touch:
+My work is fully funded through donations. If you'd like, you can support my work financially at the following links or email me to get in touch:
 
 => https://liberapay.com/svmhdvn/ Liberapay
 => https://www.patreon.com/svmhdvn Patreon

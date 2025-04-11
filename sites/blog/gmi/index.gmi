@@ -1,13 +1,13 @@
 # Siva Mahadevan
 
-Hey :) Welcome to my blog!
+Welcome to my blog!
 
 ## Directory
 
 => /about/ About Me
 => /articles/ Articles
-=> /thoughts/ Thoughts
-=> /notes/ Notes
+=> /thoughts/ Stream of Consciousness
+=> /notes/ Braindump
 
 ## Feed
 

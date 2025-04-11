@@ -1,14 +1,16 @@
-# Vegetarian Recipes
+# Braindump
 
-These are some of the recipes I cook on a fairly regular basis. Definitely not a comprehensive list at all; just the ones I've taken the time to write down :)
+I'm keeping some notes here for easy reference. Maybe this might help you too!
 
-## Instant pot
+## Vegetarian Recipes
 
-=> /recipes/instant-pot-semiya-upma.gmi Semiya Upma
-=> /recipes/instant-pot-vegetable-pulao.gmi Vegetable Pulao
-=> /recipes/instant-pot-ven-pongal.gmi Ven Pongal
-=> /recipes/jasmine-rice.gmi Jasmine rice
+### Instant pot
 
-## Everything else
+=> /notes/recipes/instant-pot-semiya-upma.gmi Semiya Upma
+=> /notes/recipes/instant-pot-vegetable-pulao.gmi Vegetable Pulao
+=> /notes/recipes/instant-pot-ven-pongal.gmi Ven Pongal
+=> /notes/recipes/jasmine-rice.gmi Jasmine rice
 
-=> /recipes/garlic-chili-noodles.gmi Garlic Chili Noodles
+### Stovetop
+
+=> /notes/recipes/garlic-chili-noodles.gmi Garlic Chili Noodles
