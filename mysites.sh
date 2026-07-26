@@ -14,47 +14,11 @@ escape_html() {
     sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g'
 }
 
-# TODO add optional tags like changefreq
-_generate_sitemap() {
-  _last_updated="$(tail -1 "$1" | cut -f1)"
-  sed \
-    -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
-    "${templates}/sitemap_meta.frag.xml"
-  while IFS='	' read -r _date _gmi _title; do
-    _path="${_gmi%.gmi}"
-    sed \
-      -e "s|%%DATE%%|${_date}|g" \
-      -e "s|%%PATH%%|${_path}|g" \
-      "${templates}/sitemap_entry.frag.xml"
-  done < "$1"
-  echo "</urlset>"
-}
-
 # $1 = path to index.gmi
 _gmi_to_feed_tsv() {
   grep -E '=> \S* \d{4}-\d{2}-\d{2}' "$1" | \
     sed 's,=> \([^ ]*\) \([^ ]*\) - \(.*\),\2\t\1\t\3,g' | \
     sort -k1
-}
-
-# $1 = path to feed.tsv
-_generate_atom_feed() {
-  _last_updated="$(tail -1 "$1" | cut -f1)"
-  sed \
-    -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
-    "${templates}/feed_meta.frag.xml"
-
-  while IFS='	' read -r _date _gmi _title; do
-    _path="${_gmi%.gmi}"
-    sed \
-      -e "s|%%DATE%%|${_date}|g" \
-      -e "s|%%PATH%%|${_path}|g" \
-      -e "s|%%TITLE%%|${_title}|g" \
-      "${templates}/feed_entry.frag.xml"
-    escape_html < "${htmlarticles}/${_path}.article.html"
-    echo '</content></entry>'
-  done < "$1"
-  echo '</feed>'
 }
 
 _build() {

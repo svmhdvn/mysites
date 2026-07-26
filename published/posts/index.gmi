@@ -1,0 +1,8 @@
+# Articles
+
+I focus mostly on technical content about open source software, with a side of random thoughts here and there. Email me if you want my thoughts about something on your mind.
+
+## Software
+
+=> /posts/array-language-io-idioms.gmi I/O Idioms in the Iversonian Array Languages
+=> /posts/impressed-by-poudriere.gmi I’m Impressed By Poudriere

@@ -1,9 +1,59 @@
 .POSIX:
+.SUFFIXES:
+.SUFFIXES: .article .html .gmi
 
-all: blog empt
+PUBLISHED_POSTS != find published -type f -name '*.gmi'
+BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
+ASSETS != find assets -type f
+NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">/\1</a></li>%g'
 
-blog:
-	$(MAKE) -C sites/blog site
+CATEGORIES = posts thoughts notes about
 
-empt:
-	$(MAKE) -C sites/empt site
+all: build/feed.xml package/gmi.tar.gz package/html.tar.gz
+
+build/.started: $(PUBLISHED_POSTS) blog.sh gmi2htmlarticle.awk
+	rm -rf build
+	cp -R published build
+	touch '$@'
+
+package/gmi.tar.gz: package/gmi
+	tar -C '$<' -cvzf '$@' .
+
+package/html.tar.gz: package/html
+	tar -C '$<' -cvzf '$@' .
+
+build/posts.tsv: build/.started
+	./blog.sh index_tsv > '$@'
+
+package/gmi: build/.started build/index.gmi $(ASSETS)
+	./blog.sh package gmi
+
+package/html: build/.started build/index.html build/sitemap.xml $(BUILT_POSTS:.gmi=.html) $(ASSETS)
+	./blog.sh package html
+	cp build/*.xml package/html
+
+build/index.gmi: build/posts.tsv
+	./blog.sh generate_front_page '$<' > '$@'
+
+build/sitemap.xml: build/index.html $(BUILT_POSTS:.gmi=.html)
+	./blog.sh generate_sitemap '$(CATEGORIES)' > '$@'
+
+build/feed.xml: build/posts.tsv $(BUILT_POSTS:.gmi=.article)
+	./blog.sh generate_atom_feed '$<' > '$@'
+
+.article.html:
+	./blog.sh article_to_html '$<' '$(NAV_CATEGORIES)' > '$@'
+
+.gmi.article:
+	./gmi2htmlarticle.awk '$<' > '$@'
+
+publish: publish_gmi publish_html
+
+publish_gmi: package/gmi.tar.gz
+	hut pages publish --domain svmhdvn.name --protocol GEMINI '$<'
+
+publish_html: package/html.tar.gz
+	hut pages publish --domain svmhdvn.name --protocol HTTPS '$<'
+
+clean:
+	xargs rm -rf < .gitignore
