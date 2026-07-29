@@ -36,33 +36,15 @@ gmi_title() {
     sed -n '/^# /{s/# //p; q}'
 }
 
-# Build Tab-Separated Values (TSV) file containing all the posts (excluding
-# front page content)
-index_tsv() {
-    find published -type f -name '*.gmi' ! -name 'index.gmi' | while IFS= read -r gmi; do
-        git_history=$(git_timestamps_iso8601 "${gmi}")
-        created="$(echo "${git_history}" | tail -1)"
-        updated="$(echo "${git_history}" | head -1)"
-        gmi_title="$(sed -n '/^# /{s/# //p; q}' "${gmi}")"
-        printf '%s\t%s\t%s\t%s\n' \
-            "${created}" \
-            "${updated}" \
-            "${gmi_title}" \
-            "${gmi#published/}"
-    done | sort -r
-}
-
-# $1 = tsvdb
-# $2 = category
+# $1 = category
 gmi_feed_entries() {
-    grep "$2/" "$1" | while IFS='	' read -r created updated title f; do
+    grep "$1/" published.tsv | while IFS='	' read -r created updated title f; do
         created_date="$(echo "${created}" | iso8601_date_only)"
         echo "=> /${f} ${created_date} - ${title}"
     done
 }
 
 # $1 = article
-# $2 = nav_categories
 article_to_html() {
     built_gmi="${1%.article}.gmi"
     published_gmi="published/${built_gmi#build/}"
@@ -74,7 +56,6 @@ article_to_html() {
     site_title="$(gmi_title < "${built_gmi}")"
     sed \
         -e "s|%%TITLE%%|${site_title}|g" \
-        -e "s|%%NAV_CATEGORIES%%|$2|g" \
         templates/header.frag.html
     cat "$1"
     sed \
@@ -84,7 +65,6 @@ article_to_html() {
 }
 
 # TODO add <priority> if needed
-# $1 = categories
 generate_sitemap() {
     last_published="$(git_timestamps_iso8601 published | head -1)"
 
@@ -92,7 +72,7 @@ generate_sitemap() {
         -e "s|%%LAST_UPDATED%%|${last_published}|g" \
         templates/sitemap_meta.frag.xml
 
-    for category in $1; do
+    for category in posts thoughts notes about; do
         find "build/${category}" -type f -name '*.html' | while IFS= read -r html; do
             gmipath="${html%.html}.gmi"
             lastmod="$(git_timestamps_iso8601 "published/${gmipath#build/}" | head -1)"
@@ -105,9 +85,8 @@ generate_sitemap() {
     echo "</urlset>"
 }
 
-# $1 = path to feed.tsv
 generate_atom_feed() {
-  _last_updated="$(tail -1 "$1" | cut -f1)"
+  _last_updated="$(tail -1 published.tsv | cut -f1)"
   sed \
     -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
     templates/feed_meta.frag.xml
@@ -121,11 +100,10 @@ generate_atom_feed() {
       templates/feed_entry.frag.xml
     escape_html "${htmlarticles}/${_path}.article.html"
     echo '</content></entry>'
-  done < "$1"
+  done < published.tsv
   echo '</feed>'
 }
 
-# $1 = tsv DB
 generate_front_page() {
     cat <<EOF
 # Siva Mahadevan
@@ -141,7 +119,7 @@ Hey :) Welcome to my blog!
 
 EOF
 
-    gmi_feed_entries "$1" posts
+    gmi_feed_entries posts
 
     cat <<EOF
 
@@ -156,14 +134,16 @@ EOF
 
 }
 
-case "$1" in
+cmd="$1"
+shift
+case "${cmd}" in
     index_tsv) index_tsv ;;
-    article_to_html) article_to_html "$2" "$3" ;;
-    generate_atom_feed) generate_atom_feed "$2" ;;
-    generate_front_page) generate_front_page "$2" ;;
-    generate_sitemap) generate_sitemap "$2" ;;
-    package) package "$2" ;;
+    article_to_html) article_to_html "$@" ;;
+    generate_atom_feed) generate_atom_feed ;;
+    generate_front_page) generate_front_page ;;
+    generate_sitemap) generate_sitemap "$@" ;;
+    package) package "$@" ;;
     *)
-        echo "$0: ERROR: Unknown command: '$1'" >&2
+        echo "$0: ERROR: Unknown command: '${cmd}'" >&2
         exit 64 # EX_USAGE
 esac

@@ -2,47 +2,41 @@
 .SUFFIXES:
 .SUFFIXES: .article .html .gmi
 
-PUBLISHED_POSTS != find published -type f -name '*.gmi'
-BUILT_POSTS != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
+PUBLISHED_PAGES != find published -type f -name '*.gmi'
+BUILT_PAGES != find published -type f -name '*.gmi' | sed 's,^published/,build/,g'
 ASSETS != find assets -type f
-NAV_CATEGORIES != echo $(CATEGORIES) | sed 's% *\([^ ]\{1,\}\)%<li><a href="/\1/">/\1</a></li>%g'
 
-CATEGORIES = posts thoughts notes about
+all: package/gmi.tar.gz package/html.tar.gz
 
-all: build/feed.xml package/gmi.tar.gz package/html.tar.gz
+package/html.tar.gz: build/sitemap.xml build/feed.xml $(ASSETS)
+	./blog.sh package html
+	cp build/*.xml package/html
+	tar -C package/html -cvzf '$@' .
 
-build/.started: $(PUBLISHED_POSTS) blog.sh gmi2htmlarticle.awk
+package/gmi.tar.gz: build/index.gmi $(ASSETS)
+	./blog.sh package gmi
+	tar -C package/gmi -cvzf '$@' .
+
+build/sitemap.xml: build/index.html $(BUILT_PAGES:.gmi=.html)
+	./blog.sh generate_sitemap > '$@'
+
+build/index.gmi: blog.sh published.tsv
+	./blog.sh generate_front_page > '$@'
+
+build/feed.xml: $(BUILT_PAGES:.gmi=.article)
+	./blog.sh generate_atom_feed > '$@'
+
+build/.started: $(PUBLISHED_PAGES) blog.sh gmi2htmlarticle.awk
 	rm -rf build
 	cp -R published build
 	touch '$@'
 
-package/gmi.tar.gz: package/gmi
-	tar -C '$<' -cvzf '$@' .
-
-package/html.tar.gz: package/html
-	tar -C '$<' -cvzf '$@' .
-
-build/posts.tsv: build/.started
-	./blog.sh index_tsv > '$@'
-
-package/gmi: build/.started build/index.gmi $(ASSETS)
-	./blog.sh package gmi
-
-package/html: build/.started build/index.html build/sitemap.xml $(BUILT_POSTS:.gmi=.html) $(ASSETS)
-	./blog.sh package html
-	cp build/*.xml package/html
-
-build/index.gmi: build/posts.tsv
-	./blog.sh generate_front_page '$<' > '$@'
-
-build/sitemap.xml: build/index.html $(BUILT_POSTS:.gmi=.html)
-	./blog.sh generate_sitemap '$(CATEGORIES)' > '$@'
-
-build/feed.xml: build/posts.tsv $(BUILT_POSTS:.gmi=.article)
-	./blog.sh generate_atom_feed '$<' > '$@'
+.PHONY built_pages: $(PUBLISHED_PAGES)
+	rm -rf build
+	cp -R published build
 
 .article.html:
-	./blog.sh article_to_html '$<' '$(NAV_CATEGORIES)' > '$@'
+	./blog.sh article_to_html '$<' > '$@'
 
 .gmi.article:
 	./gmi2htmlarticle.awk '$<' > '$@'
