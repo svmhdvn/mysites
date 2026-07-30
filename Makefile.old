@@ -20,6 +20,9 @@ package/gmi.tar.gz: build/index.gmi $(ASSETS)
 build/sitemap.xml: build/index.html $(BUILT_PAGES:.gmi=.html)
 	./blog.sh generate_sitemap > '$@'
 
+build/index.gmi: blog.sh published.tsv
+	./blog.sh generate_front_page > '$@'
+
 build/feed.xml: $(BUILT_PAGES:.gmi=.article)
 	./blog.sh generate_atom_feed > '$@'
 

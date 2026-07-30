@@ -1,6 +1,14 @@
 #!/bin/sh
 set -eu
 
+git_timestamps_iso8601() {
+    TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
+}
+
+git_timestamps_human() {
+    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F at %R UTC' "$1"
+}
+
 escape_html() {
     sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' "$@"
 }
@@ -36,6 +44,25 @@ gmi_feed_entries() {
     done
 }
 
+# $1 = article
+article_to_html() {
+    built_gmi="${1%.article}.gmi"
+    published_gmi="published/${built_gmi#build/}"
+
+    # shellcheck disable=SC2310
+    last_updated_history="$(git_timestamps_human "${published_gmi}" || git_timestamps_human published)"
+    last_updated="$(echo "${last_updated_history}" | head -1)"
+
+    site_title="$(gmi_title < "${built_gmi}")"
+    sed \
+        -e "s|%%TITLE%%|${site_title}|g" \
+        templates/header.frag.html
+    cat "$1"
+    sed \
+        -e "s|%%LAST_UPDATED%%|${last_updated}|g" \
+        -e "s|%%GMI_URL%%|gemini://svmhdvn.name/${built_gmi#build/}|g" \
+        templates/footer.frag.html
+}
 
 # TODO add <priority> if needed
 generate_sitemap() {
@@ -107,31 +134,16 @@ EOF
 
 }
 
-T="$(mktemp -d myblog.XXXXXX)"
-trap 'rm -rf "${t}"' EXIT INT TERM
-
-G="${t}/stage/gmi"
-H="${t}/stage/html"
-
-# $1 = gmi
-gmi_to_html() {
-  page="${f#${G}/}"
-  site_title="$(gmi_title < "${f}")"
-    sed \
-        -e "s|%%TITLE%%|${site_title}|g" \
-        templates/header.frag.html
-    ./gmi2htmlarticle.awk "$1"
-    sed \
-        -e "s|%%LAST_UPDATED%%|${last_updated}|g" \
-        -e "s|%%GMI_URL%%|gemini://svmhdvn.name/${built_gmi#build/}|g" \
-        templates/footer.frag.html
-}
-
-mkdir -p "${H}"
-cp -R published "${G}"
-generate_front_page > "${G}/index.gmi"
-while IFS='	' read -r date gmi title; do
-  dest="${H}/${/}"
-  dirname "${gmi}" | xargs mkdir -p
-  gmi_to_html "${f}" > "${dest}"
-done < published.tsv
+cmd="$1"
+shift
+case "${cmd}" in
+    index_tsv) index_tsv ;;
+    article_to_html) article_to_html "$@" ;;
+    generate_atom_feed) generate_atom_feed ;;
+    generate_front_page) generate_front_page ;;
+    generate_sitemap) generate_sitemap "$@" ;;
+    package) package "$@" ;;
+    *)
+        echo "$0: ERROR: Unknown command: '${cmd}'" >&2
+        exit 64 # EX_USAGE
+esac
