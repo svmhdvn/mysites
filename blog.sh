@@ -6,7 +6,7 @@ git_timestamps_iso8601() {
 }
 
 git_timestamps_human() {
-    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F at %R UTC' "$1"
+    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F' "$1"
 }
 
 escape_html() {
