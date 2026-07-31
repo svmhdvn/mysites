@@ -1,7 +1,7 @@
 <entry>
   <title>%%TITLE%%</title>
-  <id>tag:svmhdvn.name,%%DATE%%:%%PATH%%.html</id>
-  <link rel="alternate" href="https://svmhdvn.name/%%PATH%%.html"/>
-  <published>%%DATE%%</published>
-  <updated>%%DATE%%</updated>
+  <id>tag:svmhdvn.name,%%PUBLISHED_DATE%%:%%URL%%.html</id>
+  <link rel="alternate" href="https://svmhdvn.name%%URL%%.html"/>
+  <published>%%PUBLISHED_DATE%%</published>
+  <updated>%%UPDATED_DATE%%</updated>
   <content type="html">

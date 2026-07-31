@@ -1,6 +1,14 @@
 #!/bin/sh
 set -eu
 
+git_timestamps_iso8601() {
+    TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
+}
+
+git_timestamps_human() {
+    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F at %R UTC' "$1"
+}
+
 escape_html() {
     sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' "$@"
 }
@@ -9,129 +17,69 @@ iso8601_date_only() {
     sed 's/T.*//'
 }
 
-# $1 = pubtype
-package() {
-    find assets -type f | while IFS= read -r asset; do
-        assetpath="package/$1/${asset#assets/}"
-        dirname "${assetpath}" | xargs mkdir -p
-        cp "${asset}" "${assetpath}"
-    done
-
-    find build -type f -name "*.$1" | while IFS= read -r f; do
-        destpath="package/$1/${f#build/}"
-        dirname "${destpath}" | xargs mkdir -p
-        cp "${f}" "${destpath}"
-    done
-}
-
 gmi_title() {
-    sed -n '/^# /{s/# //p; q}'
+    sed -n '/^# /{s/# //p; q}' "$@"
 }
 
-# $1 = category
 gmi_feed_entries() {
-    grep "$1/" published.tsv | while IFS='	' read -r created updated title f; do
-        created_date="$(echo "${created}" | iso8601_date_only)"
-        echo "=> /${f} ${created_date} - ${title}"
-    done
+    grep '^=>[[:blank:]]*[[:graph:]]*[[:blank:]]*[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' capsule/index.gmi | \
+      cut -F2,3
 }
 
-
-# TODO add <priority> if needed
-generate_sitemap() {
-    last_published="$(git_timestamps_iso8601 published | head -1)"
-
-    sed \
-        -e "s|%%LAST_UPDATED%%|${last_published}|g" \
-        templates/sitemap_meta.frag.xml
-
-    for category in posts thoughts notes about; do
-        find "build/${category}" -type f -name '*.html' | while IFS= read -r html; do
-            gmipath="${html%.html}.gmi"
-            lastmod="$(git_timestamps_iso8601 "published/${gmipath#build/}" | head -1)"
-            sed \
-                -e "s|%%DATE%%|${lastmod}|g" \
-                templates/sitemap_entry.frag.xml
-        done
-    done
-
-    echo "</urlset>"
+html_feed_entries() {
+  grep -e '<a .*>[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$@" | \
+    sed -e 's|^.*<a href=./\(.*\).>\([^ ]*\) - \(.*\)</a>.*|\2\t\1\t\3|'
 }
 
 generate_atom_feed() {
-  _last_updated="$(tail -1 published.tsv | cut -f1)"
+  entries="$(html_feed_entries "${T}/index.html")"
+  _last_updated="$(echo "${entries}" | head -1 | cut -f1)"
   sed \
     -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
     templates/feed_meta.frag.xml
 
-  while IFS='	' read -r _date _gmi _title; do
-    _path="${_gmi%.gmi}"
+  while IFS='	' read -r date htmlpath title; do
+    updated="$(git_timestamps_iso8601 "capsule/${htmlpath%.html}.gmi")"
     sed \
-      -e "s|%%DATE%%|${_date}|g" \
-      -e "s|%%PATH%%|${_path}|g" \
-      -e "s|%%TITLE%%|${_title}|g" \
+      -e "s|%%TITLE%%|${title}|g" \
+      -e "s|%%URL%%|/${htmlpath}|g" \
+      -e "s|%%PUBLISHED_DATE%%|${date}|g" \
+      -e "s|%%UPDATED_DATE%%|${updated}|g" \
       templates/feed_entry.frag.xml
-    escape_html "${htmlarticles}/${_path}.article.html"
+    escape_html "${T}/${htmlpath}"
     echo '</content></entry>'
-  done < published.tsv
+  done <<EOF
+${entries}
+EOF
   echo '</feed>'
 }
 
-generate_front_page() {
-    cat <<EOF
-# Siva Mahadevan
+# $1 = gmi
+gmi_to_html() {
+  site_title="$(gmi_title "$1")"
+  sed \
+    -e "s|%%TITLE%%|${site_title}|g" \
+    templates/header.frag.html
 
-Hey :) Welcome to my blog!
+  ./gmi2htmlarticle.awk "$1"
 
-## Directory
-
-=> /me/ About Me
-=> /posts/ Archive
-
-## Feed
-
-EOF
-
-    gmi_feed_entries posts
-
-    cat <<EOF
-
-## Contact
-
-I'd love to hear your comments on my posts! You can comment publically by emailing my public inbox or privately at my personal email:
-
-=> mailto:~svmhdvn/public-inbox@lists.sr.ht Write a comment
-=> https://lists.sr.ht/~svmhdvn/public-inbox Public inbox archives
-=> mailto:me@svmhdvn.name Email me
-EOF
-
+  updated="$(git_timestamps_human "$1")"
+  sed \
+    -e "s|%%UPDATED_DATE%%|${updated}|g" \
+    -e "s|%%GMI%%|${1#capsule/}|g" \
+    templates/footer.frag.html
 }
 
 T="$(mktemp -d myblog.XXXXXX)"
-trap 'rm -rf "${t}"' EXIT INT TERM
+trap 'rm -rf "${T}"' EXIT INT TERM
 
-G="${t}/stage/gmi"
-H="${t}/stage/html"
+cp -R capsule "${T}/stage"
+cp assets/* "${T}/stage/"
 
-# $1 = gmi
-gmi_to_html() {
-  page="${f#${G}/}"
-  site_title="$(gmi_title < "${f}")"
-    sed \
-        -e "s|%%TITLE%%|${site_title}|g" \
-        templates/header.frag.html
-    ./gmi2htmlarticle.awk "$1"
-    sed \
-        -e "s|%%LAST_UPDATED%%|${last_updated}|g" \
-        -e "s|%%GMI_URL%%|gemini://svmhdvn.name/${built_gmi#build/}|g" \
-        templates/footer.frag.html
-}
+find capsule -type f -name '*.gmi' | while IFS= read -r page; do
+  gmi="${page#capsule/}"
+  gmi_to_html "${page}" > "${T}/stage/${gmi%.gmi}.html"
+  rm -f "${T}/stage/${gmi}"
+done
 
-mkdir -p "${H}"
-cp -R published "${G}"
-generate_front_page > "${G}/index.gmi"
-while IFS='	' read -r date gmi title; do
-  dest="${H}/${/}"
-  dirname "${gmi}" | xargs mkdir -p
-  gmi_to_html "${f}" > "${dest}"
-done < published.tsv
+tar -C "${T}/stage" -cvzf myblog.html.tar.gz .

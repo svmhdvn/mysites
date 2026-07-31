@@ -32,12 +32,6 @@ build/.started: $(PUBLISHED_PAGES) blog.sh gmi2htmlarticle.awk
 	rm -rf build
 	cp -R published build
 
-.article.html:
-	./blog.sh article_to_html '$<' > '$@'
-
-.gmi.article:
-	./gmi2htmlarticle.awk '$<' > '$@'
-
 publish: publish_gmi publish_html
 
 publish_gmi: package/gmi.tar.gz
