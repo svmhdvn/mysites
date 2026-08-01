@@ -27,13 +27,12 @@ gmi_feed_entries() {
 }
 
 html_feed_entries() {
-  grep -e '<a .*>[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$@" | \
-    sed -e 's|^.*<a href=./\(.*\).>\([^ ]*\) - \(.*\)</a>.*|\2\t\1\t\3|'
+  grep -e '<a .*>[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$@" | sed 's|^.*<a href=./\(.*\).>\([^ ]*\) - \(.*\)</a>.*|\2\t\1\t\3|'
 }
 
 generate_atom_feed() {
-  entries="$(html_feed_entries "${T}/index.html")"
-  _last_updated="$(echo "${entries}" | head -1 | cut -f1)"
+  entries="$(html_feed_entries "work/stage/index.html")"
+  _last_updated="$(echo ${entries} | head -1 | cut -F1)"
   sed \
     -e "s|%%LAST_UPDATED%%|${_last_updated}|g" \
     templates/feed_meta.frag.xml
@@ -46,7 +45,7 @@ generate_atom_feed() {
       -e "s|%%PUBLISHED_DATE%%|${date}|g" \
       -e "s|%%UPDATED_DATE%%|${updated}|g" \
       templates/feed_entry.frag.xml
-    escape_html "${T}/${htmlpath}"
+    escape_html "work/stage/${htmlpath}"
     echo '</content></entry>'
   done <<EOF
 ${entries}
@@ -70,16 +69,16 @@ gmi_to_html() {
     templates/footer.frag.html
 }
 
-T="$(mktemp -d myblog.XXXXXX)"
-trap 'rm -rf "${T}"' EXIT INT TERM
-
-cp -R capsule "${T}/stage"
-cp assets/* "${T}/stage/"
+mkdir -p work
+rm -rf work/stage
+cp -R capsule "work/stage"
+cp assets/* "work/stage/"
 
 find capsule -type f -name '*.gmi' | while IFS= read -r page; do
   gmi="${page#capsule/}"
-  gmi_to_html "${page}" > "${T}/stage/${gmi%.gmi}.html"
-  rm -f "${T}/stage/${gmi}"
+  gmi_to_html "${page}" > "work/stage/${gmi%.gmi}.html"
+  rm -f "work/stage/${gmi}"
 done
 
-tar -C "${T}/stage" -cvzf myblog.html.tar.gz .
+generate_atom_feed > work/stage/feed.xml
+tar -C work/stage -cvzf work/myblog.html.tar.gz .
