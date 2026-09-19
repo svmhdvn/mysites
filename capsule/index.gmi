@@ -4,8 +4,8 @@ Welcome to my blog!
 
 ## Feed
 
-=> /posts/array-language-io-idioms.gmi 2024-06-04 - I/O Idioms in the Iversonian Array Languages
-=> /posts/impressed-by-poudriere.gmi 2024-02-09 - I’m Impressed By Poudriere
+=> posts/array-language-io-idioms.gmi 2024-06-04 - I/O Idioms in the Iversonian Array Languages
+=> posts/impressed-by-poudriere.gmi 2024-02-09 - I’m Impressed By Poudriere
 
 ## Contact
 
@@ -17,7 +17,7 @@ I'd love to hear your comments on my posts! You can comment publically by emaili
 
 ## Directory
 
-=> /posts/ Articles
-=> /thoughts/ Stream of Consciousness
-=> /notes/ Braindump
-=> /about/ About Me
+=> posts/index.gmi Articles
+=> thoughts/index.gmi Thoughts
+=> notes/index.gmi Braindump
+=> about/index.gmi About Me

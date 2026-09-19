@@ -4,5 +4,5 @@ I focus mostly on technical content about open source software, with a side of r
 
 ## Software
 
-=> /posts/array-language-io-idioms.gmi I/O Idioms in the Iversonian Array Languages
-=> /posts/impressed-by-poudriere.gmi I’m Impressed By Poudriere
+=> array-language-io-idioms.gmi I/O Idioms in the Iversonian Array Languages
+=> impressed-by-poudriere.gmi I’m Impressed By Poudriere
