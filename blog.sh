@@ -2,32 +2,33 @@
 set -eu
 
 git_timestamps_iso8601() {
-    TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1"
+  TZ=UTC0 git log --pretty='format:%ad' --date='format-local:%Y-%m-%dT%H:%M:%SZ' "$1" | head -1
 }
 
 git_timestamps_human() {
-    TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F' "$1"
+  TZ=UTC0 git log --pretty="format:%ad" --date='format-local:%F' "$1" | head -1
 }
 
 escape_html() {
-    sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' "$@"
+  sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' "$@"
 }
 
 iso8601_date_only() {
-    sed 's/T.*//'
+  sed 's/T.*//'
 }
 
 gmi_title() {
-    sed -n '/^# /{s/# //p; q}' "$@"
+  sed -n '/^# /{s/# //p; q}' "$@"
 }
 
 gmi_feed_entries() {
-    grep '^=>[[:blank:]]*[[:graph:]]*[[:blank:]]*[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' capsule/index.gmi | \
-      cut -F2,3
+  grep '^=>[[:blank:]]*[[:graph:]]*[[:blank:]]*[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' capsule/index.gmi | \
+    cut -F2,3
 }
 
 html_feed_entries() {
-  grep -e '<a .*>[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$@" | sed 's|.*<a href=.\(.*\).>\([^ ]*\) - \(.*\)</a>.*|\1\t\2\t\3|'
+  grep -e '<a .*>[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$@" | \
+    sed 's|.*<a href=.\(.*\).>\([^ ]*\) - \(.*\)</a>.*|\1\t\2\t\3|'
 }
 
 generate_atom_feed() {

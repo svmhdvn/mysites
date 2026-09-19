@@ -10,7 +10,7 @@ html {
 }
 
 body {
-    max-width: 40rem;
+    max-width: 66ch;
     margin: 0 auto 1rem auto;
 }
 
@@ -22,6 +22,7 @@ nav {
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-bottom-right-radius: 2rem;
+    font-size: smaller;
     font-family: monospace;
 }
 
@@ -35,7 +36,7 @@ nav ul {
 }
 
 nav a {
-    margin: 1rem 0.75rem;
+    margin: 2ch 0.5ch;
     color: black;
     text-decoration: none;
 }
